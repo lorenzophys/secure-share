@@ -20,3 +20,6 @@ go.work
 
 # Node modules
 node_modules/
+
+# Other
+.DS_Store
