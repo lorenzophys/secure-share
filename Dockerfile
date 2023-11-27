@@ -12,7 +12,7 @@ RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     GOOS=linux CGO_ENABLED=0 go build -v -o /go/bin/secure-share /go/secure-share/cmd/server
 
 
-FROM alpine:latest
+FROM scratch
 COPY --from=build /go/bin/secure-share /
 COPY web /web
 CMD ["/secure-share"]

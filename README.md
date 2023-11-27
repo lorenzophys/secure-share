@@ -1,6 +1,6 @@
 # Secure Share
 
-**Secure Share** is a One-Time Password (OTP) service: a lean, efficient solution, similar in concept to Snappass but optimized for ease of use and low resource consumption, with a total size of only 23MB. Designed to work out-of-the-box, it requires no initial configuration, making it ideal for quick deployments and hassle-free setup.
+**Secure Share** is a One-Time Password (OTP) service: a lean, efficient solution, similar in concept to Snappass but optimized for ease of use and low resource consumption, with a total size of only 16MB. Designed to work out-of-the-box, it requires no initial configuration, making it ideal for quick deployments and hassle-free setup.
 
 ## Features
 
