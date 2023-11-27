@@ -10,6 +10,8 @@ services:
       BASE_URL: "http://localhost:8080"
       STORE_BACKEND: "redis"
       DEBUG_MODE: "false"
+      TITLE: "The best team"
+      SUBTITLE: "Make the shareholders happy and keep the money flowing."
     depends_on:
       - redis
 

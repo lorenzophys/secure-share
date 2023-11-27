@@ -21,16 +21,16 @@ func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
 
 	e.GET("/", func(c echo.Context) error {
 		data := TemplateData{
-			ProjectTitle:    "Secret Share",
-			ProjectSubtitle: "Share short-lived secret that can be accessed only once.",
+			ProjectTitle:    app.Config.ProjectTitle,
+			ProjectSubtitle: app.Config.ProjectSubtitle,
 		}
 		return c.Render(http.StatusOK, "base.tmpl.html", data)
 	})
 
 	e.POST("/", func(c echo.Context) error {
 		data := TemplateData{
-			ProjectTitle:    "Secret Share",
-			ProjectSubtitle: "Share short-lived secret that can be accessed only once.",
+			ProjectTitle:    app.Config.ProjectTitle,
+			ProjectSubtitle: app.Config.ProjectSubtitle,
 			BaseUrl:         app.Config.BaseUrl,
 		}
 
@@ -46,8 +46,8 @@ func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
 
 	e.GET("/:key", func(c echo.Context) error {
 		data := TemplateData{
-			ProjectTitle:    "Secret Share",
-			ProjectSubtitle: "Share short-lived secret that can be accessed only once.",
+			ProjectTitle:    app.Config.ProjectTitle,
+			ProjectSubtitle: app.Config.ProjectSubtitle,
 			RenderSecret:    false,
 		}
 
