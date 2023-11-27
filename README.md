@@ -33,9 +33,13 @@ Here are all the environment variables that can be used:
 | `SERVICE_PORT` | The port on which the service will listen. | `8080` | Ensure this port is free on your host. |
 | `REDIS_ADDR` | The address for the Redis server (if using Redis store). | `redis:6379` | Used when connecting to a Redis instance. |
 | `REDIS_PASSWORD` | The password for the Redis server (if using Redis store). | `""` | Used when authenticating to a Redis instance. |
-| `REDIS_DB` | The name of the Redis database to use (if using Redis store). | `"0"` | As a string |
+| `REDIS_DB` | The name of the Redis database to use (if using Redis store). | `"0"` | As a string. |
 | `BASE_URL` | The base URL of the service. | `http://localhost` | Useful for constructing URLs in responses. |
 | `STORE_BACKEND` | Type of storage backend to use (`redis` or `in-memory`). | `in-memory` | Choose `redis` for persistence, `in-memory` for simplicity. The `in-memory` store will reset if the container is restareted. |
 | `DEBUG_MODE` | Toggles debug mode for additional logging. | `false` | Set to `true` for verbose logging during development or troubleshooting. |
-| `TITLE` | The title visible at the top of the page | `"Secret Share"` | Can be the name of the company |
-| `DEBUG_MODE` | Toggles debug mode for additional logging. | `"Share short-lived secret that can be accessed only once."` | Can be the company tagline |
+| `TITLE` | The title visible at the top of the page | `"Secret Share"` | Can be the name of the company. |
+| `DEBUG_MODE` | Toggles debug mode for additional logging. | `"Share short-lived secret that can be accessed only once."` | Can be the company tagline. |
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
