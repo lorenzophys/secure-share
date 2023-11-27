@@ -10,7 +10,7 @@ import (
 
 func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
 	e := echo.New()
-	e.Debug = app.Config.Debug
+	e.Debug = app.Config.DebugMode
 
 	e.Renderer = NewTemplateRenderer(e, templatesGlob)
 

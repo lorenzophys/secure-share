@@ -13,7 +13,7 @@ import (
 
 func (app *Application) serve() error {
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", app.Config.Port),
+		Addr:         fmt.Sprintf("%s", app.Config.ServicePort),
 		Handler:      app.NewRouter(templatesPath),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  10 * time.Second,
@@ -39,7 +39,7 @@ func (app *Application) serve() error {
 		shutdownError <- nil
 	}()
 
-	log.Printf("starting server on port %d", app.Config.Port)
+	log.Printf("starting server on port %s", app.Config.ServicePort)
 	err := srv.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
@@ -50,7 +50,7 @@ func (app *Application) serve() error {
 		return err
 	}
 
-	log.Printf("stopped server on port %d", app.Config.Port)
+	log.Printf("stopped server on port %s", app.Config.ServicePort)
 
 	return nil
 }

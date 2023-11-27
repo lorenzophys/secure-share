@@ -28,17 +28,13 @@ var _ = Describe("MemoryStore", func() {
 			Expect(retrievedValue).NotTo(BeNil())
 			Expect(retrievedValue).To(Equal(value))
 		})
-
-		It("should return false for non-existent keys", func() {
-			_, ok := ms.Get("non-existent-key")
-			Expect(ok).To(BeFalse())
-		})
 	})
 
 	Describe("Get with invalid key", func() {
 		It("should return false for invalid keys", func() {
-			_, ok := ms.Get("invalid-key")
+			secret, ok := ms.Get("invalid-key")
 			Expect(ok).To(BeFalse())
+			Expect(secret).To(BeEmpty())
 		})
 	})
 

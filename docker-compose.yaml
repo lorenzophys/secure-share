@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  secure-share:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SERVICE_PORT: ":8080"
+      REDIS_ADDR: "redis:6379"
+      BASE_URL: "http://localhost:8080"
+      STORE_BACKEND: "redis"
+      DEBUG_MODE: "false"
+    depends_on:
+      - redis
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"

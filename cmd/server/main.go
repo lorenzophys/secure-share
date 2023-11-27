@@ -1,19 +1,13 @@
 package main
 
 import (
-	"flag"
 	"log"
+	"strconv"
 
 	"github.com/lorenzophys/secure_share/internal/store"
 	memoryStore "github.com/lorenzophys/secure_share/internal/store/in-memory"
+	redisStore "github.com/lorenzophys/secure_share/internal/store/redis"
 )
-
-type Config struct {
-	Port      int
-	StoreType string
-	Debug     bool
-	BaseUrl   string
-}
 
 type Application struct {
 	Config Config
@@ -21,26 +15,25 @@ type Application struct {
 }
 
 func main() {
-	var cfg Config
-
-	flag.IntVar(&cfg.Port, "port", 8080, "HTTP port")
-	flag.BoolVar(&cfg.Debug, "debug", false, "Debug mode")
-	flag.StringVar(&cfg.BaseUrl, "base-url", "http://localhost:8080", "Base URL")
-	flag.StringVar(&cfg.StoreType, "store-type", "in-memory", "Secret store type")
-
-	flag.Parse()
-
 	var store store.SecretStore
+	cfg := NewConfig()
 
-	switch cfg.StoreType {
+	switch cfg.StoreBackend {
 	case "in-memory":
 		store = memoryStore.NewMemoryStore()
+	case "redis":
+		var value int64
+		value, err := strconv.ParseInt(cfg.RedisDb, 10, 64)
+		if err != nil {
+			log.Printf("Error parsing %s as int: %s. Using default value: 0", cfg.RedisDb, err)
+		}
+		store = redisStore.NewRedisStore(cfg.RedisAddr, cfg.RedisPassword, int(value))
 	default:
 		log.Fatal("Invalid storage type")
 	}
 
 	app := &Application{
-		Config: cfg,
+		Config: *cfg,
 		Store:  store,
 	}
 
