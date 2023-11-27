@@ -4,24 +4,46 @@ import (
 	"log"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/fernet/fernet-go"
 	"github.com/google/uuid"
 	"github.com/lorenzophys/secure_share/internal/store"
 )
 
+type secretItem struct {
+	secret    string
+	ttl       time.Duration
+	timeStamp time.Time
+}
+
 type MemoryStore struct {
-	store map[string]string
+	store map[string]secretItem
 	sync.RWMutex
 }
 
 func NewMemoryStore() *MemoryStore {
-	return &MemoryStore{
-		store: make(map[string]string),
+	ms := &MemoryStore{
+		store: make(map[string]secretItem),
+	}
+
+	go ms.RemoveExpiredSecrets()
+
+	return ms
+}
+
+func (ms *MemoryStore) RemoveExpiredSecrets() {
+	ms.Lock()
+	defer ms.Unlock()
+
+	for key, item := range ms.store {
+		if time.Since(item.timeStamp) > item.ttl {
+			delete(ms.store, key)
+		}
 	}
 }
 
-func (ps *MemoryStore) Set(value string) string {
+func (ps *MemoryStore) Set(value string, ttl time.Duration) string {
 	ps.Lock()
 	defer ps.Unlock()
 
@@ -35,7 +57,11 @@ func (ps *MemoryStore) Set(value string) string {
 	}
 
 	truncatedKey := strings.Split(urlKey, "-")[0]
-	ps.store[truncatedKey] = string(encryptedSecret)
+	ps.store[truncatedKey] = secretItem{
+		secret:    string(encryptedSecret),
+		ttl:       ttl,
+		timeStamp: time.Now(),
+	}
 
 	return urlKey
 }
@@ -52,9 +78,9 @@ func (ps *MemoryStore) Get(urlKey string) (string, bool) {
 
 	fernetKey := store.GenerateFernetKeyFromUUID(urlKey)
 	fernetKeyList := []*fernet.Key{fernetKey}
-	secret := fernet.VerifyAndDecrypt([]byte(encryptedSecret), 0, fernetKeyList)
+	secret := fernet.VerifyAndDecrypt([]byte(encryptedSecret.secret), encryptedSecret.ttl, fernetKeyList)
 	if secret == nil {
-		log.Fatal("secret is nil")
+		return "", false
 	}
 
 	delete(ps.store, truncatedKey)

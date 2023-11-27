@@ -5,27 +5,39 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/dist/tailwind.css" />
-    <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+    <script
+      src="https://unpkg.com/htmx.org@1.9.9"
+      integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX"
+      crossorigin="anonymous"
+    ></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
       rel="stylesheet"
     />
-    <title>{{ .title }}</title>
+    <title>Secure Share</title>
   </head>
   <body>
-    {{ template "navbar" . }}
-    {{ template "proj" . }}
+    {{ template "navbar" . }} {{ template "proj" . }} {{ if .RenderSecret }}
+    <div class="container mx-auto p-4">{{ template "secret" . }}</div>
+    {{ else if .Error }}
+    <div class="container mx-auto p-4">{{ template "error" . }}</div>
+    {{ else }}
     <div class="container mx-auto p-4">{{ template "body" . }}</div>
+    {{ end }}
   </body>
   <script>
     function copyToClipboard() {
-        var copyText = document.getElementById("copyText");
-        copyText.select();
-        document.execCommand("copy");
+      var copyText = document.getElementById("copyText");
+      copyText.select();
+      document.execCommand("copy");
     }
 
     function getTextAreaContent() {
-        return document.getElementById('secretContent').value;
+      return document.getElementById("secretContent").value;
     }
-</script>
+
+    function getMenuSelection() {
+      return document.getElementById("menuSelection").value;
+    }
+  </script>
 </html>

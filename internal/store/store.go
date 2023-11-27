@@ -2,13 +2,15 @@ package store
 
 import (
 	"crypto/sha256"
+	"time"
 
 	"github.com/fernet/fernet-go"
 )
 
 type SecretStore interface {
-	Set(value string) string
+	Set(value string, ttl time.Duration) string
 	Get(key string) (string, bool)
+	RemoveExpiredSecrets()
 }
 
 func GenerateFernetKeyFromUUID(uuid string) *fernet.Key {
