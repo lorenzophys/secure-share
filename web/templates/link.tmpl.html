@@ -1,0 +1,19 @@
+<div
+  id="main-section"
+  class="bg-white shadow-md rounded mx-auto max-w-7xl px-8 pt-6 pb-8 mb-4 flex flex-col"
+>
+  <textarea
+    id="copyText"
+    class="border py-2 px-3 text-grey-darkest mb-4 w-full bg-gray-200 rounded-md resize-none"
+    rows="1"
+    readonly
+  >
+{{ .urlKey }}</textarea
+  >
+  <button
+    onclick="copyToClipboard()"
+    class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+  >
+    Copy to Clipboard
+  </button>
+</div>

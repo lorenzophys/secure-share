@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/dist/tailwind.css" />
+    <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      rel="stylesheet"
+    />
+    <title>{{ .title }}</title>
+  </head>
+  <body>
+    {{ template "navbar" . }}
+    {{ template "proj" . }}
+    <div class="container mx-auto p-4">{{ template "body" . }}</div>
+  </body>
+  <script>
+    function copyToClipboard() {
+        var copyText = document.getElementById("copyText");
+        copyText.select();
+        document.execCommand("copy");
+    }
+
+    function getTextAreaContent() {
+        return document.getElementById('secretContent').value;
+    }
+</script>
+</html>
