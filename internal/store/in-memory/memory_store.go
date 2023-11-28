@@ -33,14 +33,21 @@ func NewMemoryStore() *MemoryStore {
 }
 
 func (ms *MemoryStore) RemoveExpiredSecrets() {
-	ms.Lock()
-	defer ms.Unlock()
+	ticker := time.NewTicker(1 * time.Minute)
+	for {
+		select {
+		case <-ticker.C:
+			ms.Lock()
+			defer ms.Unlock()
 
-	for key, item := range ms.store {
-		if time.Since(item.timeStamp) > item.ttl {
-			delete(ms.store, key)
+			for key, item := range ms.store {
+				if time.Since(item.timeStamp) > item.ttl {
+					delete(ms.store, key)
+				}
+			}
 		}
 	}
+
 }
 
 func (ps *MemoryStore) Set(value string, ttl time.Duration) string {
