@@ -26,7 +26,7 @@ func NewConfig() *Config {
 		RedisDb:         getEnv("REDIS_DB", "0"),
 		BaseUrl:         getEnv("BASE_URL", "localhost"),
 		StoreBackend:    getEnv("STORE_BACKEND", "in-memory"),
-		ProjectTitle:    getEnv("TITLE", "Secret Share"),
+		ProjectTitle:    getEnv("TITLE", "Secure Share"),
 		ProjectSubtitle: getEnv("SUBTITLE", "Share short-lived secret that can be accessed only once."),
 		DebugMode:       getEnvAsBool("DEBUG_MODE", false),
 	}

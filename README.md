@@ -37,8 +37,8 @@ Here are all the environment variables that can be used:
 | `BASE_URL` | The base URL of the service. | `http://localhost` | Useful for constructing URLs in responses. |
 | `STORE_BACKEND` | Type of storage backend to use (`redis` or `in-memory`). | `in-memory` | Choose `redis` for persistence, `in-memory` for simplicity. The `in-memory` store will reset if the container is restareted. |
 | `DEBUG_MODE` | Toggles debug mode for additional logging. | `false` | Set to `true` for verbose logging during development or troubleshooting. |
-| `TITLE` | The title visible at the top of the page | `"Secret Share"` | Can be the name of the company. |
-| `DEBUG_MODE` | Toggles debug mode for additional logging. | `"Share short-lived secret that can be accessed only once."` | Can be the company tagline. |
+| `TITLE` | The title visible at the top of the page. | `"Secure Share"` | Can be the name of the company. |
+| `SUBTITLE` | The subtitle visible at the top of the page. | `"Share short-lived secret that can be accessed only once."` | Can be the company tagline. |
 
 ## License
 
