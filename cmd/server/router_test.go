@@ -91,3 +91,31 @@ var _ = Describe("Test Handlers", func() {
 		Expect(password).To(Equal("test secret"))
 	})
 })
+
+var _ = Describe("Common security headers middleware", func() {
+	var (
+		e *echo.Echo
+	)
+
+	BeforeEach(func() {
+		e = echo.New()
+		e.Use(secureShare.CommonSecurityHeadersMiddleware)
+	})
+
+	It("should set the correct headers", func() {
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		rec := httptest.NewRecorder()
+
+		handler := func(c echo.Context) error {
+			return c.NoContent(http.StatusOK)
+		}
+
+		e.GET("/", handler)
+
+		e.ServeHTTP(rec, req)
+
+		Expect(rec.Header().Get("X-Frame-Options")).To(Equal("DENY"))
+		Expect(rec.Header().Get("X-XSS-Protection")).To(Equal("0"))
+		Expect(rec.Header().Get("X-Content-Type-Options")).To(Equal("nosniff"))
+	})
+})
