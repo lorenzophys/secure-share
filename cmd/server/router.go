@@ -18,6 +18,7 @@ func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(CommonSecurityHeadersMiddleware)
 
 	e.GET("/", func(c echo.Context) error {
 		data := TemplateData{
