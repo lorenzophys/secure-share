@@ -1,0 +1,52 @@
+# replicaCount -- how many instances of secure-share to deploy.
+replicaCount: 1
+
+image:
+  # image.repository -- secure-share image repository to use.
+  repository: lorenzophys/secure-share
+
+  # image.pullPolicy -- secure-share image pull policy.
+  pullPolicy: Always
+
+  # image.tag -- secure-share container tag to use.
+  tag: latest
+
+ingress:
+  # ingress.enabled -- enable ingress resource.
+  enabled: false
+
+  # ingress.annotations -- annotations to attach to the ingress resource.
+  annotations: {}
+
+  # ingress.hosts -- a list of hosts to attach to the ingress resoource.
+  hosts:
+    - host: ""
+      paths: ["/"]
+    # Example:
+    #
+    # - host: "secure-share.yourcompany.com"
+    #   paths: ["/"]
+
+config:
+  # config.env -- environment variables to inject into secure-share deployment.
+  # refer to README.md for a list of available variables and their usage
+  env:
+    STORE_BACKEND: "in-memory"
+  # Example if redis.enabled = true
+  #
+  #   REDIS_ADDR: "secure-share-redis-master.secure-share.svc.cluster.local:6379"
+  #   BASE_URL: "secure-share.yourcompany.com"
+  #
+  # The redis password is read from the secret that redis creates when deployed
+  #
+  # config.redisAuth - the secret name and the key where redis stores its password
+  # redisAuth:
+  #   secretName: "secure-share"
+  #   secretKey: "redis-password"
+
+
+redis:
+  # redis.enabled - enable redis store. If true the variable config.env.STORE_BACKEND must be equal to "redis"
+  enabled: false
+  # the rest of the redis configuration. Please refer to this for the available configs:
+  # https://github.com/bitnami/charts/tree/main/bitnami/redis

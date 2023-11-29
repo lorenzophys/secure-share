@@ -23,3 +23,6 @@ node_modules/
 
 # Other
 .DS_Store
+
+# Chart dependencies
+chart/secure-share/charts

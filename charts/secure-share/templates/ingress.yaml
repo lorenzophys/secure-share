@@ -1,0 +1,28 @@
+{{- $dot := . }}
+---
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "secureshare.fullname" . }}
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ . }}
+            backend:
+              service:
+                name: {{ include "secureshare.fullname" $dot }}
+                port:
+                  number: {{ $.Values.service.port }}
+            pathType: ImplementationSpecific
+          {{- end }}
+    {{- end }}
+{{- end }}
