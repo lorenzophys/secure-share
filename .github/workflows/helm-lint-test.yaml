@@ -34,7 +34,9 @@ jobs:
 
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct lint --target-branch main
+        run: |
+          helm dependency update charts/secure-share
+          ct lint --target-branch main
   
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
