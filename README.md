@@ -30,15 +30,84 @@ Here are all the environment variables that can be used:
 
 | Variable      | Description | Default Value | Notes |
 |---------------|-------------|---------------|-------|
-| `SERVICE_PORT` | The port on which the service will listen. | `8080` | Ensure this port is free on your host. |
 | `REDIS_ADDR` | The address for the Redis server (if using Redis store). | `redis:6379` | Used when connecting to a Redis instance. |
-| `REDIS_PASSWORD` | The password for the Redis server (if using Redis store). | `""` | Used when authenticating to a Redis instance. |
 | `REDIS_DB` | The name of the Redis database to use (if using Redis store). | `"0"` | As a string. |
-| `BASE_URL` | The base URL of the service. | `http://localhost` | Useful for constructing URLs in responses. |
+| `BASE_URL` | The base URL of the service. | `http://localhost:8080` | Useful for constructing URLs in responses. |
 | `STORE_BACKEND` | Type of storage backend to use (`redis` or `in-memory`). | `in-memory` | Choose `redis` for persistence, `in-memory` for simplicity. The `in-memory` store will reset if the container is restareted. |
 | `DEBUG_MODE` | Toggles debug mode for additional logging. | `false` | Set to `true` for verbose logging during development or troubleshooting. |
 | `TITLE` | The title visible at the top of the page. | `"Secure Share"` | Can be the name of the company. |
 | `SUBTITLE` | The subtitle visible at the top of the page. | `"Share short-lived secret that can be accessed only once."` | Can be the company tagline. |
+
+## Helm chart
+
+Secure Share comes with a Helm chart for Kubernetes deployment. Here some configuration examples.
+
+### In-memory store for development purposes
+
+```yaml
+# ...
+
+ingress:
+  enabled: false
+
+config:
+  env:
+    STORE_BACKEND: "in-memory"
+    DEBUG_MODE: "true"
+
+redis:
+  enabled: false
+```
+
+### In-memory store with Nginx ingress
+
+```yaml
+# ...
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+  hosts:
+    - host: secure-share.yourcompany.com
+      paths: ["/"]
+
+config:
+  env:
+    BASE_URL: "secure-share.yourcompany.com"
+    STORE_BACKEND: "in-memory"
+
+redis:
+  enabled: false
+```
+
+### Redis store with Nginx ingress
+
+```yaml
+# ...
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+  hosts:
+    - host: secure-share.yourcompany.com
+      paths: ["/"]
+
+config:
+  env:
+    REDIS_ADDR: "secure-share-redis-master.default.svc.cluster.local:6379"
+    BASE_URL: "secure-share.yourcompany.com"
+    STORE_BACKEND: "redis"
+  redisAuth:
+    secretName: "secure-share-redis"
+    secretKey: "redis-password"
+
+redis:
+  enabled: true
+  auth:
+    password: "secretpassword" # Don't do this
+```
 
 ## License
 

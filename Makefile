@@ -2,7 +2,7 @@ SERVER_BINARY_NAME=ss-server
 BINARY_DIR=bin
 DIST_DIR=web/dist
 
-PLATFORM ?= linux/arm64
+PLATFORM ?= linux/amd64
 IMG ?= lorenzophys/secure-share:dev
 PORT ?= 8080
 
@@ -22,6 +22,9 @@ test:
 
 docker-build:
 	@docker build -t ${IMG} --platform ${PLATFORM} .
+
+docker-push:
+	@docker push ${IMG}
 
 docker-run:
 	@docker run --rm -p 8080:${PORT} ${IMG}
