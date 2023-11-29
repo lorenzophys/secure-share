@@ -40,7 +40,20 @@ Here are all the environment variables that can be used:
 
 ## Helm chart
 
-Secure Share comes with a Helm chart for Kubernetes deployment. Here some configuration examples.
+Secure Share comes with a Helm chart for Kubernetes deployment. 
+To install the chart first add the repo:
+
+```shell
+helm repo add secure-share https://lorenzophys.github.io/secure-share
+```
+
+then you can install Secure Share by running:
+
+```shell
+helm install <release-name> secure-share/secure-share
+```
+
+Here some configuration examples.
 
 ### In-memory store for development purposes
 
