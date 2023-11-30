@@ -11,8 +11,12 @@
 - Flexible Storage Options:
   - Redis Store: Secure Share offers integration with a Redis backend.
   - In-Memory Store: for quick testing or simpler use cases, an in-memory store is available, requiring no external     dependencies.
-- Robust Encryption: Utilizes the Fernet encryption algorithm. The key is derived from the first block of a UUID, ensuring that the secret and the key are never stored together.
+- Robust Encryption: Utilizes the Fernet encryption algorithm. The Fernet key is derived a UUID with `pbkdf2`, ensuring that the secret and the key are never stored together.
 - Ephemeral Secrets: Combines the TTL feature of the Fernet algorithm with the TTL of the store, guaranteeing that secrets are truly ephemeral.
+
+## Notes on encryption
+
+Following the [reccomendetions from OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2) the Fernet key is derived from a UUID, salted with a random sequence and passed to `pbkdf2` using `600000` iterations.
 
 ## Quickstart
 
@@ -40,7 +44,7 @@ Here are all the environment variables that can be used:
 
 ## Helm chart
 
-Secure Share comes with a Helm chart for Kubernetes deployment. 
+Secure Share comes with a Helm chart for Kubernetes deployment.
 To install the chart first add the repo:
 
 ```shell
