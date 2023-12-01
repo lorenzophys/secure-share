@@ -11,6 +11,7 @@ require (
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/stretchr/testify v1.8.4
 	github.com/testcontainers/testcontainers-go v0.26.0
+	golang.org/x/crypto v0.15.0
 )
 
 require (
@@ -62,7 +63,6 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
-	golang.org/x/crypto v0.15.0 // indirect
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea // indirect
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/net v0.18.0 // indirect

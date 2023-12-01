@@ -2,6 +2,7 @@ package redis_store
 
 import (
 	"context"
+	"crypto/rand"
 	"log"
 	"strings"
 	"time"
@@ -31,16 +32,24 @@ func (rs *RedisStore) Set(value string, ttl time.Duration) string {
 
 	urlKey := uuid.New().String()
 
-	fernetKey := store.GenerateFernetKeyFromUUID(urlKey)
+	salt := make([]byte, 16)
+	_, err := rand.Read(salt)
+	if err != nil {
+		log.Printf("Failed to generate random salt: %v", err)
+	}
+
+	fernetKey := store.GenerateFernetKeyFromUUID(urlKey, salt)
 
 	encryptedSecret, err := fernet.EncryptAndSign([]byte(value), fernetKey)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	encryptedSecretWithSalt := append(salt, encryptedSecret...)
+
 	truncatedKey := strings.Split(urlKey, "-")[0]
 
-	err = rs.client.Set(ctx, truncatedKey, encryptedSecret, ttl).Err()
+	err = rs.client.Set(ctx, truncatedKey, encryptedSecretWithSalt, ttl).Err()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,12 +61,15 @@ func (rs *RedisStore) Get(urlKey string) (string, bool) {
 	ctx := context.Background()
 	truncatedKey := strings.Split(urlKey, "-")[0]
 
-	encryptedSecret, err := rs.client.Get(ctx, truncatedKey).Result()
+	encryptedSecretWithSalt, err := rs.client.Get(ctx, truncatedKey).Result()
 	if err != nil {
 		return "", false
 	}
 
-	fernetKey := store.GenerateFernetKeyFromUUID(urlKey)
+	salt := encryptedSecretWithSalt[:16]
+	encryptedSecret := encryptedSecretWithSalt[16:]
+
+	fernetKey := store.GenerateFernetKeyFromUUID(urlKey, []byte(salt))
 	fernetKeyList := []*fernet.Key{fernetKey}
 
 	secret := fernet.VerifyAndDecrypt([]byte(encryptedSecret), 0, fernetKeyList)

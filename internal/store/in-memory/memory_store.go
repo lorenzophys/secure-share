@@ -1,6 +1,7 @@
 package memory_store
 
 import (
+	"crypto/rand"
 	"log"
 	"strings"
 	"sync"
@@ -56,16 +57,24 @@ func (ps *MemoryStore) Set(value string, ttl time.Duration) string {
 
 	urlKey := uuid.New().String()
 
-	fernetKey := store.GenerateFernetKeyFromUUID(urlKey)
+	salt := make([]byte, 16)
+	_, err := rand.Read(salt)
+	if err != nil {
+		log.Printf("Failed to generate random salt: %v", err)
+	}
+
+	fernetKey := store.GenerateFernetKeyFromUUID(urlKey, salt)
 
 	encryptedSecret, err := fernet.EncryptAndSign([]byte(value), fernetKey)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	encryptedSecretWithSalt := append(salt, encryptedSecret...)
+
 	truncatedKey := strings.Split(urlKey, "-")[0]
 	ps.store[truncatedKey] = secretItem{
-		secret:    string(encryptedSecret),
+		secret:    string(encryptedSecretWithSalt),
 		ttl:       ttl,
 		timeStamp: time.Now(),
 	}
@@ -78,14 +87,18 @@ func (ps *MemoryStore) Get(urlKey string) (string, bool) {
 	defer ps.RUnlock()
 
 	truncatedKey := strings.Split(urlKey, "-")[0]
-	encryptedSecret, ok := ps.store[truncatedKey]
+	encryptedSecretWithSalt, ok := ps.store[truncatedKey]
 	if !ok {
 		return "", false
 	}
 
-	fernetKey := store.GenerateFernetKeyFromUUID(urlKey)
+	salt := encryptedSecretWithSalt.secret[:16]
+	encryptedSecret := encryptedSecretWithSalt.secret[16:]
+
+	fernetKey := store.GenerateFernetKeyFromUUID(urlKey, []byte(salt))
+
 	fernetKeyList := []*fernet.Key{fernetKey}
-	secret := fernet.VerifyAndDecrypt([]byte(encryptedSecret.secret), encryptedSecret.ttl, fernetKeyList)
+	secret := fernet.VerifyAndDecrypt([]byte(encryptedSecret), encryptedSecretWithSalt.ttl, fernetKeyList)
 	if secret == nil {
 		return "", false
 	}
