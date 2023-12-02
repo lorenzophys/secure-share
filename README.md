@@ -23,7 +23,7 @@ Following the [reccomendetions from OWASP](https://cheatsheetseries.owasp.org/ch
 Running the service is as straightforward as executing the following command in the root of the repository:
 
 ```shell
-docker compose up -d
+docker compose up -d --build
 ```
 
 then you can test the UI by connecting to `localhost:8080`.
@@ -41,6 +41,9 @@ Here are all the environment variables that can be used:
 | `DEBUG_MODE` | Toggles debug mode for additional logging. | `false` | Set to `true` for verbose logging during development or troubleshooting. |
 | `TITLE` | The title visible at the top of the page. | `"Secure Share"` | Can be the name of the company. |
 | `SUBTITLE` | The subtitle visible at the top of the page. | `"Share short-lived secret that can be accessed only once."` | Can be the company tagline. |
+| `TLS_ENABLED` | Toggles TLS. | `false` | Set to `true` enables TLS. |
+| `CERT_FILE` | The path of the TLS certificate. | `""` |  |
+| `KEY_FILE` | The path of the TLS key. | `""` |  |
 
 ## Helm chart
 

@@ -6,29 +6,46 @@ import (
 	"strconv"
 )
 
+type RedisConfig struct {
+	RedisAddr     string
+	RedisPassword string
+	RedisDb       string
+}
+
+type TLSConfig struct {
+	Enabled  bool
+	CertFile string
+	KeyFile  string
+}
 type Config struct {
 	ServicePort     string
 	StoreBackend    string
 	DebugMode       bool
 	BaseUrl         string
-	RedisAddr       string
-	RedisPassword   string
-	RedisDb         string
 	ProjectTitle    string
 	ProjectSubtitle string
+	Redis           RedisConfig
+	TLS             TLSConfig
 }
 
-func NewConfig() *Config {
-	return &Config{
+func NewConfig() Config {
+	return Config{
 		ServicePort:     getEnv("SERVICE_PORT", ":8080"),
-		RedisAddr:       getEnv("REDIS_ADDR", "redis:6379"),
-		RedisPassword:   getEnv("REDIS_PASSWORD", ""),
-		RedisDb:         getEnv("REDIS_DB", "0"),
-		BaseUrl:         getEnv("BASE_URL", "localhost"),
+		BaseUrl:         getEnv("BASE_URL", "localhost:8080"),
 		StoreBackend:    getEnv("STORE_BACKEND", "in-memory"),
 		ProjectTitle:    getEnv("TITLE", "Secure Share"),
 		ProjectSubtitle: getEnv("SUBTITLE", "Share short-lived secret that can be accessed only once."),
 		DebugMode:       getEnvAsBool("DEBUG_MODE", false),
+		Redis: RedisConfig{
+			RedisAddr:     getEnv("REDIS_ADDR", "redis:6379"),
+			RedisDb:       getEnv("REDIS_DB", "0"),
+			RedisPassword: getEnv("REDIS_PASSWORD", ""),
+		},
+		TLS: TLSConfig{
+			Enabled:  getEnvAsBool("TLS_ENABLED", false),
+			CertFile: getEnv("CERT_FILE", ""),
+			KeyFile:  getEnv("KEY_FILE", ""),
+		},
 	}
 }
 

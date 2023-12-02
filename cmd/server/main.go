@@ -23,21 +23,21 @@ func main() {
 		store = memoryStore.NewMemoryStore()
 	case "redis":
 		var value int64
-		value, err := strconv.ParseInt(cfg.RedisDb, 10, 64)
+		value, err := strconv.ParseInt(cfg.Redis.RedisDb, 10, 64)
 		if err != nil {
-			log.Printf("Error parsing %s as int: %s. Using default value: 0", cfg.RedisDb, err)
+			log.Printf("Error parsing %s as int: %s. Using default value: 0", cfg.Redis.RedisDb, err)
 		}
-		store = redisStore.NewRedisStore(cfg.RedisAddr, cfg.RedisPassword, int(value))
+		store = redisStore.NewRedisStore(cfg.Redis.RedisAddr, cfg.Redis.RedisPassword, int(value))
 	default:
 		log.Fatal("Invalid storage type")
 	}
 
 	app := &Application{
-		Config: *cfg,
+		Config: cfg,
 		Store:  store,
 	}
 
-	err := app.serve()
+	err := app.Serve()
 	if err != nil {
 		log.Fatal(err)
 	}
