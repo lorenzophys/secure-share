@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log"
@@ -11,10 +12,31 @@ import (
 	"time"
 )
 
-func (app *Application) serve() error {
+func (app *Application) NewTLSConfig() *tls.Config {
+	tlsConfig := &tls.Config{
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+	}
+
+	if cert, err := tls.LoadX509KeyPair(app.Config.TLS.CertFile, app.Config.TLS.KeyFile); err != nil {
+		log.Printf("Failed to load key pair: %v", err)
+	} else {
+		tlsConfig.Certificates = []tls.Certificate{cert}
+	}
+
+	return tlsConfig
+}
+
+func (app *Application) Serve() error {
+	var tlsConfig *tls.Config
+
+	if app.Config.TLS.Enabled {
+		tlsConfig = app.NewTLSConfig()
+	}
+
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("%s", app.Config.ServicePort),
 		Handler:      app.NewRouter(templatesPath),
+		TLSConfig:    tlsConfig,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
@@ -40,7 +62,13 @@ func (app *Application) serve() error {
 	}()
 
 	log.Printf("starting server on port %s", app.Config.ServicePort)
-	err := srv.ListenAndServe()
+
+	var err error
+	if app.Config.TLS.Enabled {
+		err = srv.ListenAndServeTLS("", "")
+	} else {
+		err = srv.ListenAndServe()
+	}
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}

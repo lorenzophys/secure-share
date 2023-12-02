@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -18,7 +19,7 @@ func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(CommonSecurityHeadersMiddleware)
+	e.Use(app.CommonSecurityHeadersMiddleware)
 
 	e.GET("/", func(c echo.Context) error {
 		data := TemplateData{
@@ -32,7 +33,10 @@ func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
 		data := TemplateData{
 			ProjectTitle:    app.Config.ProjectTitle,
 			ProjectSubtitle: app.Config.ProjectSubtitle,
-			BaseUrl:         app.Config.BaseUrl,
+			BaseUrl:         fmt.Sprintf("http://%s", app.Config.BaseUrl),
+		}
+		if app.Config.TLS.Enabled {
+			data.BaseUrl = fmt.Sprintf("https://%s", app.Config.BaseUrl)
 		}
 
 		urlKey, err := app.HandlePostSecret(c)

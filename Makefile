@@ -1,12 +1,12 @@
 SERVER_BINARY_NAME=ss-server
 BINARY_DIR=bin
 DIST_DIR=web/dist
+TLS_DIR=tls
 
 PLATFORM ?= linux/amd64
 IMG ?= lorenzophys/secure-share:dev
-PORT ?= 8080
 
-.PHONY: all server run-server css docker-build docker-run
+.PHONY: server run-server css docker-build docker-run docker-push cert
 
 server: css
 	@go build -o $(BINARY_DIR)/$(SERVER_BINARY_NAME) -v ./cmd/server
@@ -26,5 +26,5 @@ docker-build:
 docker-push:
 	@docker push ${IMG}
 
-docker-run:
-	@docker run --rm -p 8080:${PORT} ${IMG}
+cert:
+	@openssl req -x509 -newkey rsa:4096 -keyout ${TLS_DIR}/server.key -out ${TLS_DIR}/server.crt -days 365 -nodes

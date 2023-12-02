@@ -4,11 +4,16 @@ services:
     build: .
     ports:
       - "8080:8080"
+    volumes:
+      - ./tls:/tls
     environment:
       REDIS_ADDR: "redis:6379"
-      BASE_URL: "http://localhost:8080"
+      BASE_URL: "localhost:8080"
       STORE_BACKEND: "redis"
       DEBUG_MODE: "false"
+      TLS_ENABLED: "true"
+      CERT_FILE: "/tls/server.crt"
+      KEY_FILE: "/tls/server.key"
       # TITLE: "The best team"
       # SUBTITLE: "Make the shareholders happy and keep the money flowing."
     depends_on:

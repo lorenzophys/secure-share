@@ -94,12 +94,13 @@ var _ = Describe("Test Handlers", func() {
 
 var _ = Describe("Common security headers middleware", func() {
 	var (
-		e *echo.Echo
+		e   *echo.Echo
+		app secureShare.Application
 	)
 
 	BeforeEach(func() {
 		e = echo.New()
-		e.Use(secureShare.CommonSecurityHeadersMiddleware)
+		e.Use(app.CommonSecurityHeadersMiddleware)
 	})
 
 	It("should set the correct headers", func() {
@@ -117,5 +118,29 @@ var _ = Describe("Common security headers middleware", func() {
 		Expect(rec.Header().Get("X-Frame-Options")).To(Equal("DENY"))
 		Expect(rec.Header().Get("X-XSS-Protection")).To(Equal("0"))
 		Expect(rec.Header().Get("X-Content-Type-Options")).To(Equal("nosniff"))
+	})
+
+	It("should set the correct headers when TLS is enabled", func() {
+		cfg := secureShare.NewConfig()
+		app.Config = cfg
+		app.Config.TLS.Enabled = true
+		app.Config.TLS.CertFile = "tls/server.crt"
+		app.Config.TLS.KeyFile = "tls/server.key"
+
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		rec := httptest.NewRecorder()
+
+		handler := func(c echo.Context) error {
+			return c.NoContent(http.StatusOK)
+		}
+
+		e.GET("/", handler)
+
+		e.ServeHTTP(rec, req)
+
+		Expect(rec.Header().Get("X-Frame-Options")).To(Equal("DENY"))
+		Expect(rec.Header().Get("X-XSS-Protection")).To(Equal("0"))
+		Expect(rec.Header().Get("X-Content-Type-Options")).To(Equal("nosniff"))
+		Expect(rec.Header().Get("Strict-Transport-Security")).To(Equal("max-age=31536000; includeSubDomains; preload"))
 	})
 })
