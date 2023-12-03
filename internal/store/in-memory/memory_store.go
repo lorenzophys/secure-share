@@ -2,7 +2,8 @@ package memory_store
 
 import (
 	"crypto/rand"
-	"log"
+	"log/slog"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -11,6 +12,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/lorenzophys/secure_share/internal/store"
 )
+
+var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 type secretItem struct {
 	secret    string
@@ -29,6 +32,7 @@ func NewMemoryStore() *MemoryStore {
 	}
 
 	go ms.RemoveExpiredSecrets()
+	logger.Info("new in-memory store created successfully.")
 
 	return ms
 }
@@ -44,6 +48,7 @@ func (ms *MemoryStore) RemoveExpiredSecrets() {
 			for key, item := range ms.store {
 				if time.Since(item.timeStamp) > item.ttl {
 					delete(ms.store, key)
+					logger.Info("deleted expired key", "expired_key", key)
 				}
 			}
 		}
@@ -60,14 +65,14 @@ func (ps *MemoryStore) Set(value string, ttl time.Duration) string {
 	salt := make([]byte, 16)
 	_, err := rand.Read(salt)
 	if err != nil {
-		log.Printf("Failed to generate random salt: %v", err)
+		logger.Error("failed to generate random salt.", "salt", salt, "error", err)
 	}
 
 	fernetKey := store.GenerateFernetKeyFromUUID(urlKey, salt)
 
 	encryptedSecret, err := fernet.EncryptAndSign([]byte(value), fernetKey)
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("failed to encrypt secret", "error", err)
 	}
 
 	encryptedSecretWithSalt := append(salt, encryptedSecret...)
@@ -104,6 +109,7 @@ func (ps *MemoryStore) Get(urlKey string) (string, bool) {
 	}
 
 	delete(ps.store, truncatedKey)
+	logger.Info("secret revealed, hence deleted from the store", "secret_key", urlKey)
 
 	return string(secret), true
 }

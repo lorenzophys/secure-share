@@ -6,11 +6,21 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 )
+
+type SlogAdapter struct {
+	*slog.Logger
+}
+
+func (s *SlogAdapter) Write(p []byte) (n int, err error) {
+	s.Logger.Error(string(p))
+	return len(p), nil
+}
 
 func (app *Application) NewTLSConfig() *tls.Config {
 	tlsConfig := &tls.Config{
@@ -18,9 +28,10 @@ func (app *Application) NewTLSConfig() *tls.Config {
 	}
 
 	if cert, err := tls.LoadX509KeyPair(app.Config.TLS.CertFile, app.Config.TLS.KeyFile); err != nil {
-		log.Printf("Failed to load key pair: %v", err)
+		app.logger.Error("tls config error: failed to load key pair: %v", err)
 	} else {
 		tlsConfig.Certificates = []tls.Certificate{cert}
+		app.logger.Info("tls config setup correctly.", "certFile", app.Config.TLS.CertFile, "keyFile", app.Config.TLS.KeyFile)
 	}
 
 	return tlsConfig
@@ -33,10 +44,13 @@ func (app *Application) Serve() error {
 		tlsConfig = app.NewTLSConfig()
 	}
 
+	logAdapter := &SlogAdapter{app.logger}
+
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("%s", app.Config.ServicePort),
 		Handler:      app.NewRouter(templatesPath),
 		TLSConfig:    tlsConfig,
+		ErrorLog:     log.New(logAdapter, "HALO", 0),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
@@ -49,7 +63,7 @@ func (app *Application) Serve() error {
 		signal.Notify(quit, os.Interrupt)
 		sig := <-quit
 
-		log.Printf("shutting down the server: received %s", sig.String())
+		app.logger.Info("shutting down the server.", "signal", sig.String())
 
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -61,12 +75,12 @@ func (app *Application) Serve() error {
 		shutdownError <- nil
 	}()
 
-	log.Printf("starting server on port %s", app.Config.ServicePort)
-
 	var err error
 	if app.Config.TLS.Enabled {
+		app.logger.Info("starting TLS server...", "port", app.Config.ServicePort)
 		err = srv.ListenAndServeTLS("", "")
 	} else {
+		app.logger.Info("starting server...", "port", app.Config.ServicePort)
 		err = srv.ListenAndServe()
 	}
 	if !errors.Is(err, http.ErrServerClosed) {
@@ -78,7 +92,7 @@ func (app *Application) Serve() error {
 		return err
 	}
 
-	log.Printf("stopped server on port %s", app.Config.ServicePort)
+	app.logger.Info("stopped server.", "port", app.Config.ServicePort)
 
 	return nil
 }
