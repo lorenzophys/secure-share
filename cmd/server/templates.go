@@ -3,6 +3,8 @@ package main
 import (
 	"html/template"
 	"io"
+	"log/slog"
+	"os"
 
 	"github.com/labstack/echo/v4"
 )
@@ -28,9 +30,11 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 }
 
 func NewTemplateRenderer(e *echo.Echo, globPattern string) echo.Renderer {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	tmpl, err := template.ParseGlob(globPattern)
 	if err != nil {
-		e.Logger.Fatal(err)
+		logger.Error("error parsing template directory glob.", "glob_pattern", globPattern, "error", err)
+		os.Exit(1)
 	}
 
 	return &Template{Templates: tmpl}

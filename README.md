@@ -43,7 +43,8 @@ Here are all the environment variables that can be used:
 |---------------|-------------|---------------|-------|
 | `REDIS_ADDR` | The address for the Redis server (if using Redis store). | `redis:6379` | Used when connecting to a Redis instance. |
 | `REDIS_DB` | The name of the Redis database to use (if using Redis store). | `"0"` | As a string. |
-| `BASE_URL` | The base URL of the service. | `http://localhost:8080` | Useful for constructing URLs in responses. |
+| `REDIS_DPASSWORD` | The password of the Redis instance. | `""` | For the K8s deployment see the Helm chart example. |
+| `BASE_URL` | The base URL of the service. | `localhost:8080` | Useful for constructing URLs in responses. |
 | `STORE_BACKEND` | Type of storage backend to use (`redis` or `in-memory`). | `in-memory` | Choose `redis` for persistence, `in-memory` for simplicity. The `in-memory` store will reset if the container is restareted. |
 | `DEBUG_MODE` | Toggles debug mode for additional logging. | `false` | Set to `true` for verbose logging during development or troubleshooting. |
 | `TITLE` | The title visible at the top of the page. | `"Secure Share"` | Can be the name of the company. |

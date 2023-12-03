@@ -1,15 +1,15 @@
 package main
 
 import (
-	"log"
+	"log/slog"
 	"os"
 	"strconv"
 )
 
 type RedisConfig struct {
-	RedisAddr     string
-	RedisPassword string
-	RedisDb       string
+	Address  string
+	Password string
+	Db       string
 }
 
 type TLSConfig struct {
@@ -37,9 +37,9 @@ func NewConfig() Config {
 		ProjectSubtitle: getEnv("SUBTITLE", "Share short-lived secret that can be accessed only once."),
 		DebugMode:       getEnvAsBool("DEBUG_MODE", false),
 		Redis: RedisConfig{
-			RedisAddr:     getEnv("REDIS_ADDR", "redis:6379"),
-			RedisDb:       getEnv("REDIS_DB", "0"),
-			RedisPassword: getEnv("REDIS_PASSWORD", ""),
+			Address:  getEnv("REDIS_ADDR", "redis:6379"),
+			Db:       getEnv("REDIS_DB", "0"),
+			Password: getEnv("REDIS_PASSWORD", ""),
 		},
 		TLS: TLSConfig{
 			Enabled:  getEnvAsBool("TLS_ENABLED", false),
@@ -57,6 +57,7 @@ func getEnv(key, defaultValue string) string {
 }
 
 func getEnvAsBool(key string, defaultValue bool) bool {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	valueStr := getEnv(key, "")
 	if valueStr == "" {
 		return defaultValue
@@ -64,7 +65,7 @@ func getEnvAsBool(key string, defaultValue bool) bool {
 
 	value, err := strconv.ParseBool(valueStr)
 	if err != nil {
-		log.Printf("Error parsing %s as bool: %s. Using default value: %v", key, err, defaultValue)
+		logger.Error("error parsing environment variable as bool. Using default value.", "environment_variable", valueStr, "default_value", defaultValue, "error", err)
 		return defaultValue
 	}
 

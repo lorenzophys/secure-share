@@ -3,7 +3,8 @@ package redis_store
 import (
 	"context"
 	"crypto/rand"
-	"log"
+	"log/slog"
+	"os"
 	"strings"
 	"time"
 
@@ -12,6 +13,8 @@ import (
 	"github.com/lorenzophys/secure_share/internal/store"
 	"github.com/redis/go-redis/v9"
 )
+
+var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 type RedisStore struct {
 	client *redis.Client
@@ -23,6 +26,7 @@ func NewRedisStore(addr, password string, db int) *RedisStore {
 		Password: password,
 		DB:       db,
 	})
+	logger.Info("new Redis store created successfully.")
 
 	return &RedisStore{client: rdb}
 }
@@ -35,14 +39,14 @@ func (rs *RedisStore) Set(value string, ttl time.Duration) string {
 	salt := make([]byte, 16)
 	_, err := rand.Read(salt)
 	if err != nil {
-		log.Printf("Failed to generate random salt: %v", err)
+		logger.Error("failed to generate random salt.", "salt", salt, "error", err)
 	}
 
 	fernetKey := store.GenerateFernetKeyFromUUID(urlKey, salt)
 
 	encryptedSecret, err := fernet.EncryptAndSign([]byte(value), fernetKey)
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("failed to encrypt secret", "error", err)
 	}
 
 	encryptedSecretWithSalt := append(salt, encryptedSecret...)
@@ -51,7 +55,7 @@ func (rs *RedisStore) Set(value string, ttl time.Duration) string {
 
 	err = rs.client.Set(ctx, truncatedKey, encryptedSecretWithSalt, ttl).Err()
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("call to Redis SET failed", "error", err)
 	}
 
 	return urlKey
@@ -79,8 +83,9 @@ func (rs *RedisStore) Get(urlKey string) (string, bool) {
 
 	err = rs.client.Del(ctx, truncatedKey).Err()
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("call to Redis DEL failed", "error", err)
 	}
+	logger.Info("secret revealed, hence deleted from the store", "secret_key", urlKey)
 
 	return string(secret), true
 }

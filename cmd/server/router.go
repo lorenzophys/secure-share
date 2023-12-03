@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -17,7 +19,28 @@ func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
 
 	e.Static("/dist", "web/dist")
 
-	e.Use(middleware.Logger())
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogStatus:   true,
+		LogURI:      true,
+		LogError:    true,
+		HandleError: true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			if v.Error == nil {
+				app.logger.LogAttrs(context.Background(), slog.LevelInfo, "REQUEST",
+					slog.String("uri", v.URI),
+					slog.Int("status", v.Status),
+				)
+			} else {
+				app.logger.LogAttrs(context.Background(), slog.LevelError, "REQUEST_ERROR",
+					slog.String("uri", v.URI),
+					slog.Int("status", v.Status),
+					slog.String("err", v.Error.Error()),
+				)
+			}
+			return nil
+		},
+	}))
+
 	e.Use(middleware.Recover())
 	e.Use(app.CommonSecurityHeadersMiddleware)
 
@@ -67,6 +90,8 @@ func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
 
 		return c.Render(http.StatusOK, "base.tmpl.html", data)
 	})
+
+	app.logger.Info("setup new router", "debug_mode", e.Debug)
 
 	return e
 }
