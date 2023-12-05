@@ -50,7 +50,7 @@ func (app *Application) Serve() error {
 		Addr:         fmt.Sprintf("%s", app.Config.ServicePort),
 		Handler:      app.NewRouter(templatesPath),
 		TLSConfig:    tlsConfig,
-		ErrorLog:     log.New(logAdapter, "HALO", 0),
+		ErrorLog:     log.New(logAdapter, "", 0),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,

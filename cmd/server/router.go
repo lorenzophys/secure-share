@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/sethvargo/go-password/password"
 )
 
 func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
@@ -50,6 +51,16 @@ func (app *Application) NewRouter(templatesGlob string) *echo.Echo {
 			ProjectSubtitle: app.Config.ProjectSubtitle,
 		}
 		return c.Render(http.StatusOK, "base.tmpl.html", data)
+	})
+
+	e.GET("/generatepwd", func(c echo.Context) error {
+		// Generate a password that is 20 characters long with 4 digits, 4 symbols,
+		// allowing upper and lower case letters, allowing repeat characters.
+		generatedPwd, err := password.Generate(25, 4, 4, false, true)
+		if err != nil {
+			app.logger.Error("failed to generate password.", "err", err)
+		}
+		return c.String(http.StatusOK, generatedPwd)
 	})
 
 	e.POST("/", func(c echo.Context) error {
