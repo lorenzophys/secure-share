@@ -20,6 +20,7 @@
   - In-Memory Store: for quick testing or simpler use cases, an in-memory store is available, requiring no external     dependencies.
 - Robust Encryption: Utilizes the Fernet encryption algorithm. The Fernet key is derived a UUID with `pbkdf2`, ensuring that the secret and the key are never stored together.
 - Ephemeral Secrets: Combines the TTL feature of the Fernet algorithm with the TTL of the store, guaranteeing that secrets are truly ephemeral.
+- Secure password generator.
 
 ## Notes on encryption
 
