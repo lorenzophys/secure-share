@@ -43,6 +43,11 @@ config:
   # redisAuth:
   #   secretName: "secure-share"
   #   secretKey: "redis-password"
+  #
+  # If you're connecting to an existing redis cluster then you need redis.enabled = false,
+  # but you need to provide anyway REDIS_ADDR, and populate (or not, depending if you
+  # require password authentication to the redis cluster) config.redisAuth. If you don't
+  # then it is assumed that there's no authentication.
 
 
 redis:

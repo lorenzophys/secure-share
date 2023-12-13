@@ -21,11 +21,11 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "secureshare.fullname" . }}
-          {{- if .Values.redis.enabled }}
+          {{- with .Values.config.redisAuth }}
           env:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.config.redisAuth.secretName }}
-                  key: {{ .Values.config.redisAuth.secretKey }}
+                  name: {{ .secretName }}
+                  key: {{ .secretKey }}
           {{- end }}
