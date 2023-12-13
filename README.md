@@ -24,7 +24,7 @@
 
 ## Notes on encryption
 
-Following the [reccomendetions from OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2) the Fernet key is derived from a UUID, salted with a random sequence and passed to `pbkdf2` using `600000` iterations.
+Following the [recommendations from OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2) the Fernet key is derived from a UUID, salted with a random sequence and passed to `pbkdf2` using `600000` iterations.
 
 ## Quickstart
 
@@ -136,6 +136,34 @@ redis:
   enabled: true
   auth:
     password: "secretpassword" # Don't do this
+```
+
+### Using AWS ElastiCache Redis cluster
+
+ElastiCache is the AWS managed Redis service. To setup this correctly you need to:
+
+1. create a subnet  group and associate all the Kubernetes cluster subnets that you want to have access to Redis.
+2. create a SecurityGroup with an inbound rule that:
+   1. allows `TCP` inbound traffic on port 6379 (or your custom one if you want to use another port)
+   2. uses as source a SecurityGroup that allows traffic to you k8s cluster's subnets
+3. set the `REDIS_ADDR` variable equal to the endpoint of the master node
+
+```yaml
+# ...
+
+config:
+  env:
+    REDIS_ADDR: "secure-share-example-0001-001.something.0001.euw1.cache.amazonaws.com:6379"
+    BASE_URL: "secure-share.yourcompany.com"
+    STORE_BACKEND: "redis"
+  # redisAuth only if your cluster requires authentication and you have the credentials
+  # stored in a secret.
+  # redisAuth:
+  #   secretName: "secure-share-redis"
+  #   secretKey: "redis-password"
+
+redis:
+  enabled: false # We want to use an existing cluster
 ```
 
 ## License
