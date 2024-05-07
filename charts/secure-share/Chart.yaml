@@ -10,6 +10,6 @@ maintainers:
     url: https://github.com/lorenzophys
 dependencies:
   - name: redis
-    version: 18.4.0
+    version: 18.19.4
     repository: "https://charts.bitnami.com/bitnami"
     condition: redis.enabled
