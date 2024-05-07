@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/fernet/fernet-go v0.0.0-20240119011108-303da6aec611
-	github.com/google/uuid v1.4.0
+	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/onsi/ginkgo/v2 v2.13.1
 	github.com/onsi/gomega v1.30.0
