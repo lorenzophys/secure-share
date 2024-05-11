@@ -1,7 +1,7 @@
 apiVersion: v2
 name: secure-share
 description: A Helm chart for the Secure Share service
-version: 0.2.0
+version: 0.2.1
 appVersion: 0.1.1
 type: application
 maintainers:
@@ -10,6 +10,6 @@ maintainers:
     url: https://github.com/lorenzophys
 dependencies:
   - name: redis
-    version: 18.19.4
+    version: 19.3.0
     repository: "https://charts.bitnami.com/bitnami"
     condition: redis.enabled
