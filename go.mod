@@ -1,6 +1,8 @@
 module github.com/lorenzophys/secure_share
 
-go 1.21.4
+go 1.22
+
+toolchain go1.22.3
 
 require (
 	github.com/fernet/fernet-go v0.0.0-20240119011108-303da6aec611
@@ -9,7 +11,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.17.3
 	github.com/onsi/gomega v1.33.0
 	github.com/redis/go-redis/v9 v9.5.1
-	github.com/sethvargo/go-password v0.2.0
+	github.com/sethvargo/go-password v0.3.0
 	github.com/stretchr/testify v1.8.4
 	github.com/testcontainers/testcontainers-go v0.26.0
 	golang.org/x/crypto v0.22.0
