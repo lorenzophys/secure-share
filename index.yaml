@@ -3,6 +3,25 @@ entries:
   secure-share:
   - apiVersion: v2
     appVersion: 0.1.1
+    created: "2024-05-11T18:59:19.221099563Z"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 19.3.0
+    description: A Helm chart for the Secure Share service
+    digest: f8844301d201d0f9a84ef26dbe73d3585983e76c679042d41c12a625f6b42852
+    maintainers:
+    - email: lorenzo.maffioli@gmail.com
+      name: lorenzophys
+      url: https://github.com/lorenzophys
+    name: secure-share
+    type: application
+    urls:
+    - https://github.com/lorenzophys/secure-share/releases/download/secure-share-0.2.1/secure-share-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: 0.1.1
     created: "2023-12-13T12:25:10.679278258Z"
     dependencies:
     - condition: redis.enabled
@@ -39,4 +58,4 @@ entries:
     urls:
     - https://github.com/lorenzophys/secure-share/releases/download/secure-share-0.1.0/secure-share-0.1.0.tgz
     version: 0.1.0
-generated: "2023-12-13T12:25:10.679291843Z"
+generated: "2024-05-11T18:59:19.221115883Z"
